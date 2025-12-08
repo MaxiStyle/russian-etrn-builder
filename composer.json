@@ -21,12 +21,7 @@
             "MaxiStyle\\EtrnBuilder\\": "src/"
         }
     },
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "https://github.com/maxistyle/russian-etrn-builder.git"
-		}
-	],
+	
 	"require-dev": {
 		"squizlabs/php_codesniffer": "*",
 		"phpstan/phpstan": "*",

@@ -1,0 +1,28 @@
+# Composer
+vendor/
+composer.phar
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Cache
+.cache/
+tmp/
+temp/
+
+# OSPanel
+.osp/
+
+# Build artifacts
+build/
+dist/

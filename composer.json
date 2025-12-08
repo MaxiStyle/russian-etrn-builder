@@ -1,0 +1,35 @@
+{
+	"name": "maxistyle/russian-etrn-builder",
+	"description": "PHP библиотека для создания ЭТрН документов",
+	"type": "library",
+	"keywords": ["etrn", "xml"],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "MaxiStyle",
+			"email": "tiranmax@yandex.ru"
+		}
+	],
+	"require": {
+		"php": ">=8.1",
+		"ext-dom": "*"
+	},
+	"minimum-stability": "stable",
+	"prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "MaxiStyle\\EtrnBuilder\\": "src/"
+        }
+    },
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/maxistyle/russian-etrn-builder.git"
+		}
+	],
+	"require-dev": {
+		"squizlabs/php_codesniffer": "*",
+		"phpstan/phpstan": "*",
+		"friendsofphp/php-cs-fixer": "*"
+	}
+}

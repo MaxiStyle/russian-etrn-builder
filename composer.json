@@ -21,7 +21,6 @@
             "MaxiStyle\\EtrnBuilder\\": "src/"
         }
     },
-	
 	"require-dev": {
 		"squizlabs/php_codesniffer": "*",
 		"phpstan/phpstan": "*",

@@ -15,12 +15,11 @@ abstract class BaseEntity
         return $this->$name;
     }
 
-    public function __set(string $name, mixed $value): self
+    public function __set(string $name, mixed $value): void
     {
         if (!property_exists($this, $name)) {
             throw new \InvalidArgumentException("Property {$name} does not exist");
         }
         $this->$name = $value;
-        return $this;
     }
 }

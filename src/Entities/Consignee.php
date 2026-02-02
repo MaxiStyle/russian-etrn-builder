@@ -3,16 +3,11 @@
 namespace MaxiStyle\EtrnBuilder\Entities;
 
 /**
- * Сущность "СвГО"
- * Сведения о грузоотправителе
+ * Сущность "СвГП"
+ * Сведения о грузополучателе
  */
-class Shipper extends BaseEntity
+class Consignee extends BaseEntity
 {
-    /**
-     * @var int Статус грузоотправителя (грузоотправитель является / не является экспедитором)
-     */
-    public int $status;
-
     /**
      * @var ?LegalEntity Юрлицо (должен быть либо ЮЛ, либо ИП)
      */
@@ -32,4 +27,9 @@ class Shipper extends BaseEntity
      * @var ?Contact Контакт
      */
     public ?Contact $contact;
+
+    /**
+     * @var ?Address Адрес доставки груза
+     */
+    public ?Address $deliveryAddress;
 }

@@ -6,7 +6,7 @@ namespace MaxiStyle\EtrnBuilder\Entities;
  * Сущность "СвЮЛУчТрНТип"
  * Сведения о юридическом лице
  */
-class UL extends BaseEntity
+class LegalEntity extends BaseEntity
 {
     /**
      * @var ?string Наименование полное

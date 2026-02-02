@@ -6,7 +6,7 @@ namespace MaxiStyle\EtrnBuilder\Entities;
  * Сущность "СодИнфГО"
  * Содержание транспортной накладной, информация грузоотправителя
  */
-class ShipperInfo extends BaseEntity
+class Shipment extends BaseEntity
 {
     /**
      * @var ?string Содержание операции (константа)

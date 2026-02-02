@@ -76,7 +76,7 @@ class DocumentGenerator
         try {
             $dom = new DOMDocument('1.0', 'utf-8');
             $dom->xmlStandalone = true; // Set standalone to true
-            $dom->formatOutput = true;/
+            $dom->formatOutput = true;
 
             $file = $dom->createElement('Файл');
 

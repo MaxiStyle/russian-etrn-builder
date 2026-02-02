@@ -25,7 +25,72 @@ class T1 extends Document
     public ?DateTimeInterface $dateFile = null;
 
     /**
-     * @var ?ShipperInfo Содержание транспортной накладной, информация грузоотправителя
+     * @var ?string UUID документа
      */
-    public ?ShipperInfo $shipperInfo = null;
+    public ?string $documentId = null;
+
+    /**
+     * @var ?string Содержание транспортной накладной, информация грузоотправителя
+     */
+    public ?Shipment $shipment = null;
+
+    /**
+     * @var ?Consignee Сведения о грузополучателе
+     */
+    public ?Consignee $consignee = null;
+
+    /**
+     * @var ?Carrier Сведения о перевозчике
+     */
+    public ?Carrier $carrier = null;
+
+    /**
+     * @var ?Driver Сведения о водителе
+     */
+    public ?Driver $driver = null;
+
+    /**
+     * @var ?Vehicle Сведения о транспортном средстве
+     */
+    public ?Vehicle $vehicle = null;
+
+    /**
+     * @var ?Route Сведения о передаче груза при приеме груза перевозчиком
+     */
+    public ?Route $route = null;
+
+    /**
+     * @var ?Cargo Сведения о грузе
+     */
+    public ?Cargo $cargo = null;
+
+    /**
+     * @var ?Conditions Сведения об указаниях грузоотправителя по особым условиям перевозки
+     */
+    public ?Conditions $conditions = null;
+
+    /**
+     * @var ?Signatory Сведения о подписанте
+     */
+    public ?Signatory $signatory = null;
+
+    /**
+     * @var ?string Порядковый номер транспортной накладной
+     */
+    public ?string $transportNumber = null;
+
+    /**
+     * @var ?DateTimeInterface Дата составления транспортной накладной
+     */
+    public ?DateTimeInterface $transportDate = null;
+
+    /**
+     * @var ?string Порядковый номер заказа (заявки)
+     */
+    public ?string $orderNumber = null;
+
+    /**
+     * @var ?DateTimeInterface Дата заказа (заявки)
+     */
+    public ?DateTimeInterface $orderDate = null;
 }

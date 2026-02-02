@@ -7,7 +7,7 @@ namespace MaxiStyle\EtrnBuilder\Entities;
  */
 abstract class BaseEntity
 {
-    public function get(string $name): mixed
+    public function __get(string $name): mixed
     {
         if (!property_exists($this, $name)) {
             throw new \InvalidArgumentException("Property {$name} does not exist");
@@ -15,7 +15,7 @@ abstract class BaseEntity
         return $this->$name;
     }
 
-    public function set(string $name, mixed $value): self
+    public function __set(string $name, mixed $value): self
     {
         if (!property_exists($this, $name)) {
             throw new \InvalidArgumentException("Property {$name} does not exist");

@@ -65,14 +65,14 @@ $ul->set('name', 'ООО "МНОГОВОЗОФФ"')
     ->set('kpp', '272301001');
 
 // Создаем сведения о грузоотправителе
-$svGO = new Entities\SvGO();
+$svGO = new Entities\Shipper();
 $svGO->set('goEksp', 0) // грузоотправитель не является экспедитором
     ->set('ul', $ul)
     ->set('address', $address)
     ->set('contact', $contact);
 
 // Создаем содержание информации грузоотправителя
-$sodInfGO = new Entities\SodInfGO();
+$sodInfGO = new Entities\ShipperInfo();
 $sodInfGO->set('svGO', $svGO);
 
 // Создаем документ Т1

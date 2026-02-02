@@ -11,15 +11,15 @@ class UL extends BaseEntity
     /**
      * @var ?string Наименование полное
      */
-    protected ?string $name = null;
+    public ?string $name = null;
 
     /**
      * @var ?string ИНН
      */
-    protected ?string $inn = null;
+    public ?string $inn = null;
 
     /**
      * @var ?string КПП
      */
-    protected ?string $kpp = null;
+    public ?string $kpp = null;
 }

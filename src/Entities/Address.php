@@ -11,55 +11,55 @@ class Address extends BaseEntity
     /**
      * @var ?string Адрес строкой (если заполнено, то остальные элементы можно не заполнять)
      */
-    protected ?string $full = null;
+    public ?string $full = null;
 
     /**
      * @var ?string Индекс
      */
-    protected ?string $index = null;
+    public ?string $index = null;
 
     /**
      * @var ?string Код региона
      */
-    protected ?string $regionCode = null;
+    public ?string $regionCode = null;
 
     /**
      * @var ?string Район
      */
-    protected ?string $district = null;
+    public ?string $district = null;
 
     /**
      * @var ?string Город
      */
-    protected ?string $city = null;
+    public ?string $city = null;
 
     /**
      * @var ?string Населенный пункт
      */
-    protected ?string $settlement = null;
+    public ?string $settlement = null;
 
     /**
      * @var ?string Улица
      */
-    protected ?string $street = null;
+    public ?string $street = null;
 
     /**
      * @var ?string Дом
      */
-    protected ?string $house = null;
+    public ?string $house = null;
 
     /**
      * @var ?string Корпус
      */
-    protected ?string $building = null;
+    public ?string $building = null;
 
     /**
      * @var ?string Квартира
      */
-    protected ?string $flat = null;
+    public ?string $flat = null;
 
     /**
      * @var ?string Код страны
      */
-    protected ?string $countryCode = null;
+    public ?string $countryCode = null;
 }

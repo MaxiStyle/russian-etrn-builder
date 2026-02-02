@@ -6,30 +6,30 @@ namespace MaxiStyle\EtrnBuilder\Entities;
  * Сущность "СвГО"
  * Сведения о грузоотправителе
  */
-class SvGO extends BaseEntity
+class Shipper extends BaseEntity
 {
     /**
      * @var int Статус грузоотправителя (грузоотправитель является / не является экспедитором)
      */
-    protected int $goEksp;
+    public int $status;
 
     /**
      * @var ?UL Юрлицо (должен быть либо ЮЛ, либо ИП)
      */
-    protected ?UL $ul;
+    public ?UL $ul;
 
     /**
      * @var ?IP ИП (должен быть либо ЮЛ, либо ИП)
      */
-    protected ?IP $ip;
+    public ?IP $ip;
 
     /**
      * @var ?Address Адрес
      */
-    protected ?Address $address;
+    public ?Address $address;
 
     /**
      * @var ?Contact Контакт
      */
-    protected ?Contact $contact;
+    public ?Contact $contact;
 }

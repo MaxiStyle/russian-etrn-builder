@@ -12,20 +12,20 @@ abstract class Document extends BaseEntity
     /**
      * @var ?string Порядковый номер транспортной накладной
      */
-    protected ?string $numTrN = null;
+    public ?string $numTrN = null;
 
     /**
      * @var ?string Порядковый номер заказа (заявки)
      */
-    protected ?string $numOrder = null;
+    public ?string $numOrder = null;
 
     /**
      * @var ?DateTimeInterface Дата составления транспортной накладной
      */
-    protected ?DateTimeInterface $dateTrN = null;
+    public ?DateTimeInterface $dateTrN = null;
 
     /**
      * @var ?DateTimeInterface Дата заказа (заявки)
      */
-    protected ?DateTimeInterface $dateOrder = null;
+    public ?DateTimeInterface $dateOrder = null;
 }

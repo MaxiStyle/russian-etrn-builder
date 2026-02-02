@@ -23,12 +23,12 @@ $ul->set('name', 'ООО "МНОГОВОЗОФФ"')
     ->set('inn', '2724218020')
     ->set('kpp', '272301001');
 // Основные сведенья
-$svGO = new Entities\SvGO();
+$svGO = new Entities\Shipper();
 $svGO->set('goEksp', 0) // грузоотправитель является / не является экспедитором
     ->set('ul', $ul)
     ->set('address', $address)
     ->set('contact', $contact);
-$sodInfGO = new Entities\SodInfGO();
+$sodInfGO = new Entities\ShipperInfo();
 $sodInfGO->set('svGO', $svGO);
 
 

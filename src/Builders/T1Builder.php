@@ -2,15 +2,14 @@
 
 namespace MaxiStyle\EtrnBuilder\Builders;
 
-use DOMException;
-use MaxiStyle\EtrnBuilder\Entities;
 use DOMDocument;
 use DOMElement;
+use DOMException;
+use MaxiStyle\EtrnBuilder\Entities;
 
 /**
  * Билдер Титул T1 - Информация о грузе, ТС, водителе
  */
-
 class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
 {
     /**
@@ -22,22 +21,27 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             throw new \InvalidArgumentException('Документ должен быть экземпляром T1');
         }
 
+        // Атрибуты корневого элемента
+        $parent->setAttribute('ИдФайл', $doc->fileId ?? ''); // имя файла
+        $parent->setAttribute('ВерсПрог', $doc->softwareVersion ?? ''); // версия программы
+        $parent->setAttribute('ВерсФорм', $doc->formatVersion ?? ''); // версия формата
+
         $document = $dom->createElement('Документ');
 
         $document->setAttribute('КНД', $doc->knd);
         $document->setAttribute('ПоФактХЖ', $doc->docName);
         $document->setAttribute('ДатИнфГО', $doc->dateFile->format('d.m.Y'));
-        $document->setAttribute('ВрИнфГО',$doc->dateFile->format('H:i:s'));
+        $document->setAttribute('ВрИнфГО', $doc->dateFile->format('H:i:s'));
 
         // Содержание транспортной накладной, информация грузоотправителя
         $shipment = $doc->shipment;
-        $shipper = $shipment->shipper;
-        
+        $shipper = $doc->shipper;
+
         $sodInfGo = $dom->createElement('СодИнфГО');
-        $sodInfGo->setAttribute('УИД_ТрН', $doc->documentId ?? ''); // UUID документа
+        $sodInfGo->setAttribute('УИД_ТрН', $doc->documentUuid ?? ''); // UUID документа
         $sodInfGo->setAttribute('СодОпер', $shipment->operation);
-        $sodInfGo->setAttribute('НомерТрН', $doc->numTrN ?? '');
-        $sodInfGo->setAttribute('ДатаТрН', $doc->dateTrN?->format('d.m.Y') ?? '');
+        $sodInfGo->setAttribute('НомерТрН', $doc->transportNumber ?? '');
+        $sodInfGo->setAttribute('ДатаТрН', $doc->transportDate?->format('d.m.Y') ?? '');
         $sodInfGo->setAttribute('НомЗак', $doc->orderNumber ?? '');
         $sodInfGo->setAttribute('ДатаЗак', $doc->orderDate?->format('d.m.Y') ?? '');
 
@@ -46,52 +50,107 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
         $svGo->setAttribute('ГОЭксп', $shipper->status ?? '0'); // Статус грузоотправителя (грузоотправитель является / не является экспедитором)
 
         $rekIdentGo = $dom->createElement('РекИдентГО');
+        $idSv = $dom->createElement('ИдСв');
+        if ($shipper->legalEntity !== null) {
+            $ul = $shipper->legalEntity;
+            $svYuLuch = $dom->createElement('СвЮЛУч');
+            $svYuLuch->setAttribute('НаимОрг', $ul->name);
+            $svYuLuch->setAttribute('ИННЮЛ', $ul->inn);
+            $svYuLuch->setAttribute('КПП', $ul->kpp);
+            $idSv->appendChild($svYuLuch);
+        } else if ($shipper->ip !== null) {
+            $ip = $shipper->ip;
+            $svIp = $dom->createElement('СвИП');
+            $svIp->setAttribute('ФИО', $ip->fio);
+            $svIp->setAttribute('ИННФЛ', $ip->inn);
+            $svIp->setAttribute('ОГРНИП', $ip->ogrnip);
+            $svIp->setAttribute('ИныеСвед', $ip->other);
+            $idSv->appendChild($svIp);
+        }
+        $rekIdentGo->appendChild($idSv);
+
+        $addr = $dom->createElement('Адрес');
+        $address = $shipper->address;
+        $addressElement = $dom->createElement('АдрРФ');
+        $addressElement->setAttribute('Индекс', $address->index ?? '');
+        if ($address->regionCode) $addressElement->setAttribute('КодРегион', $address->regionCode ?? '');
+        if ($address->district) $addressElement->setAttribute('Район', $address->district);
+        if ($address->city) $addressElement->setAttribute('Город', $address->city ?? '');
+        if ($address->settlement) $addressElement->setAttribute('НаселПункт', $address->settlement ?? '');
+        if ($address->street) $addressElement->setAttribute('Улица', $address->street ?? '');
+        if ($address->house) $addressElement->setAttribute('Дом', $address->house ?? '');
+        if ($address->building) $addressElement->setAttribute('Корпус', $address->building ?? '');
+        if ($address->flat) $addressElement->setAttribute('Кварт', $address->flat ?? '');
+        $addr->appendChild($addressElement);
+        $rekIdentGo->appendChild($addr);
+
+        $contact = $shipper->contact;
+        $contactElement = $dom->createElement('Контакт');
+        $this->append($dom, $contactElement, 'Тлф', $contact->phone);
+        $this->append($dom, $contactElement, 'ЭлПочта', $contact->email);
+        $this->append($dom, $contactElement, 'ИнКонт', $contact->other);
+        $rekIdentGo->appendChild($contactElement);
+
+        $svGo->appendChild($rekIdentGo);
+        $sodInfGo->appendChild($svGo);
+
+        if ($shipper->status) {
+            // ЗАКАЗЧИК
+            $customer = $doc->customer;
+            $svKaz = $dom->createElement('СвЗак');
+
+            $rekIdentZak = $dom->createElement('РекИдентЗак');
             $idSv = $dom->createElement('ИдСв');
-                if ($shipper->legalEntity !== null) {
-                    $ul = $shipper->legalEntity;
-                    $svYuLuch = $dom->createElement('СвЮЛУч');
-                    $svYuLuch->setAttribute('НаимОрг', $ul->name);
-                    $svYuLuch->setAttribute('ИННЮЛ', $ul->inn);
-                    $svYuLuch->setAttribute('КПП', $ul->kpp);
-                    $idSv->appendChild($svYuLuch);
-                } else if ($shipper->ip !== null) {
-                    $ip = $shipper->ip;
-                    $svIp = $dom->createElement('СвИП');
-                    $svIp->setAttribute('ФИО', $ip->fio);
-                    $svIp->setAttribute('ИННФЛ', $ip->inn);
-                    $svIp->setAttribute('ОГРНИП', $ip->ogrnip);
-                    $svIp->setAttribute('ИныеСвед', $ip->other);
-                    $idSv->appendChild($svIp);
-                }
-            $rekIdentGo->appendChild($idSv);
+            if ($customer->legalEntity !== null) {
+                $ul = $customer->legalEntity;
+                $svYuLuch = $dom->createElement('СвЮЛУч');
+                $svYuLuch->setAttribute('НаимОрг', $ul->name);
+                $svYuLuch->setAttribute('ИННЮЛ', $ul->inn);
+                $svYuLuch->setAttribute('КПП', $ul->kpp);
+                $idSv->appendChild($svYuLuch);
+            } else if ($customer->ip !== null) {
+                $ip = $customer->ip;
+                $svIp = $dom->createElement('СвИП');
+                $svIp->setAttribute('ФИО', $ip->fio);
+                $svIp->setAttribute('ИННФЛ', $ip->inn);
+                $svIp->setAttribute('ОГРНИП', $ip->ogrnip);
+                $svIp->setAttribute('ИныеСвед', $ip->other);
+                $idSv->appendChild($svIp);
+            }
+            $rekIdentZak->appendChild($idSv);
 
             $addr = $dom->createElement('Адрес');
-            $address = $shipper->address;
+            $address = $customer->address;
             $addressElement = $dom->createElement('АдрРФ');
             $addressElement->setAttribute('Индекс', $address->index ?? '');
-            $addressElement->setAttribute('КодРегион', $address->regionCode ?? '');
-            $addressElement->setAttribute('Район', $address->district ?? '');
-            $addressElement->setAttribute('Город', $address->city ?? '');
-            $addressElement->setAttribute('НаселПункт', $address->settlement ?? '');
-            $addressElement->setAttribute('Улица', $address->street ?? '');
-            $addressElement->setAttribute('Дом', $address->house ?? '');
-            $addressElement->setAttribute('Корпус', $address->building ?? '');
-            $addressElement->setAttribute('Кварт', $address->flat ?? '');
-            $addressElement->setAttribute('КодСтр', $address->countryCode ?? '');
-            $addressElement->setAttribute('АдрТекст', $address->full ?? '');
+            if ($address->regionCode) $addressElement->setAttribute('КодРегион', $address->regionCode ?? '');
+            if ($address->district) $addressElement->setAttribute('Район', $address->district);
+            if ($address->city) $addressElement->setAttribute('Город', $address->city ?? '');
+            if ($address->settlement) $addressElement->setAttribute('НаселПункт', $address->settlement ?? '');
+            if ($address->street) $addressElement->setAttribute('Улица', $address->street ?? '');
+            if ($address->house) $addressElement->setAttribute('Дом', $address->house ?? '');
+            if ($address->building) $addressElement->setAttribute('Корпус', $address->building ?? '');
+            if ($address->flat) $addressElement->setAttribute('Кварт', $address->flat ?? '');
             $addr->appendChild($addressElement);
-            $rekIdentGo->appendChild($addr);
+            $rekIdentZak->appendChild($addr);
 
-            $contact = $shipper->contact;
+            $contact = $customer->contact;
             $contactElement = $dom->createElement('Контакт');
             $this->append($dom, $contactElement, 'Тлф', $contact->phone);
             $this->append($dom, $contactElement, 'ЭлПочта', $contact->email);
             $this->append($dom, $contactElement, 'ИнКонт', $contact->other);
-            $rekIdentGo->appendChild($contactElement);
+            $rekIdentZak->appendChild($contactElement);
+            $svKaz->appendChild($rekIdentZak);
 
+            $contract = $customer->contract;
+            $dokUslPer = $dom->createElement('ДогУслПер');
+            $this->append($dom, $dokUslPer, 'НаимДок', $contract->name);
+            $this->append($dom, $dokUslPer, 'НомерДок', $contract->number);
+            $this->append($dom, $dokUslPer, 'ДатаДок', $contract->date->format('d.m.Y'));
+            $svKaz->appendChild($dokUslPer);
 
-        $svGo->appendChild($rekIdentGo);
-        $sodInfGo->appendChild($svGo);
+            $sodInfGo->appendChild($svKaz);
+        }
 
         // ГРУЗОПОЛУЧАТЕЛЬ
         if ($doc->consignee !== null) {
@@ -123,16 +182,14 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $address = $consignee->address;
             $addressElement = $dom->createElement('АдрРФ');
             $addressElement->setAttribute('Индекс', $address->index ?? '');
-            $addressElement->setAttribute('КодРегион', $address->regionCode ?? '');
-            $addressElement->setAttribute('Район', $address->district ?? '');
-            $addressElement->setAttribute('Город', $address->city ?? '');
-            $addressElement->setAttribute('НаселПункт', $address->settlement ?? '');
-            $addressElement->setAttribute('Улица', $address->street ?? '');
-            $addressElement->setAttribute('Дом', $address->house ?? '');
-            $addressElement->setAttribute('Корпус', $address->building ?? '');
-            $addressElement->setAttribute('Кварт', $address->flat ?? '');
-            $addressElement->setAttribute('КодСтр', $address->countryCode ?? '');
-            $addressElement->setAttribute('АдрТекст', $address->full ?? '');
+            if ($address->regionCode) $addressElement->setAttribute('КодРегион', $address->regionCode ?? '');
+            if ($address->district) $addressElement->setAttribute('Район', $address->district);
+            if ($address->city) $addressElement->setAttribute('Город', $address->city ?? '');
+            if ($address->settlement) $addressElement->setAttribute('НаселПункт', $address->settlement ?? '');
+            if ($address->street) $addressElement->setAttribute('Улица', $address->street ?? '');
+            if ($address->house) $addressElement->setAttribute('Дом', $address->house ?? '');
+            if ($address->building) $addressElement->setAttribute('Корпус', $address->building ?? '');
+            if ($address->flat) $addressElement->setAttribute('Кварт', $address->flat ?? '');
             $addr->appendChild($addressElement);
             $rekIdentGp->appendChild($addr);
 
@@ -169,8 +226,8 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $gruz = $dom->createElement('ОпГруз');
             $gruz->setAttribute('НаимГруз', $cargo->name);
             $gruz->setAttribute('СостГруз', $cargo->condition);
-            $gruz->setAttribute('СпУпак', $cargo->packagingMethod);
-            $gruz->setAttribute('ВидТар', $cargo->packagingType);
+            $gruz->setAttribute('СпУпак', $cargo->packagingMethod ?: '-');
+            $gruz->setAttribute('ВидТар', $cargo->packagingType ?: '-');
             if (isset($cargo->cargoUnits)) {
                 $gruz->setAttribute('КолМестГр', $cargo->cargoUnits);
             }
@@ -199,8 +256,7 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $svPa->setAttribute('ЛицоПА', $conditions->redirectionPerson);
             $svPa->setAttribute('СпосПерУкПА', $conditions->redirectionMethod);
             $kont = $dom->createElement('КонтПА');
-            $tel = $dom->createElement('Тлф', $conditions->contactInfo);
-            $kont->appendChild($tel);
+            $this->append($dom, $kont, 'Тлф', $conditions->contactInfo);
             $svPa->appendChild($kont);
             $ukazGo->appendChild($svPa);
 
@@ -238,16 +294,14 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $address = $carrier->address;
             $addressElement = $dom->createElement('АдрРФ');
             $addressElement->setAttribute('Индекс', $address->index ?? '');
-            $addressElement->setAttribute('КодРегион', $address->regionCode ?? '');
-            $addressElement->setAttribute('Район', $address->district ?? '');
-            $addressElement->setAttribute('Город', $address->city ?? '');
-            $addressElement->setAttribute('НаселПункт', $address->settlement ?? '');
-            $addressElement->setAttribute('Улица', $address->street ?? '');
-            $addressElement->setAttribute('Дом', $address->house ?? '');
-            $addressElement->setAttribute('Корпус', $address->building ?? '');
-            $addressElement->setAttribute('Кварт', $address->flat ?? '');
-            $addressElement->setAttribute('КодСтр', $address->countryCode ?? '');
-            $addressElement->setAttribute('АдрТекст', $address->full ?? '');
+            if ($address->regionCode) $addressElement->setAttribute('КодРегион', $address->regionCode ?? '');
+            if ($address->district) $addressElement->setAttribute('Район', $address->district);
+            if ($address->city) $addressElement->setAttribute('Город', $address->city ?? '');
+            if ($address->settlement) $addressElement->setAttribute('НаселПункт', $address->settlement ?? '');
+            if ($address->street) $addressElement->setAttribute('Улица', $address->street ?? '');
+            if ($address->house) $addressElement->setAttribute('Дом', $address->house ?? '');
+            if ($address->building) $addressElement->setAttribute('Корпус', $address->building ?? '');
+            if ($address->flat) $addressElement->setAttribute('Кварт', $address->flat ?? '');
             $addr->appendChild($addressElement);
             $svPer->appendChild($addr);
 
@@ -278,9 +332,8 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
                 $voditel->setAttribute('ДатаВыдВУ', $driver->licenseIssueDate);
             }
             if (isset($driver->phone)) {
-                $tel = $dom->createElement('Тлф', $driver->phone);
+                $this->append($dom, $voditel, 'Тлф', $driver->phone);
             }
-            $voditel->appendChild($tel);
             $fio = $dom->createElement('ФИО');
             $fio->setAttribute('Фамилия', $driver->lastName);
             $fio->setAttribute('Имя', $driver->firstName);
@@ -380,7 +433,7 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $signatory = $doc->signatory;
 
             $podpis = $dom->createElement('Подписант');
-            $podpis->setAttribute('Подписант', $signatory->status);
+            $podpis->setAttribute('СтатПодп', $signatory->status);
             $fio = $dom->createElement('ФИО');
             $fio->setAttribute('Фамилия', $signatory->lastName);
             $fio->setAttribute('Имя', $signatory->firstName);

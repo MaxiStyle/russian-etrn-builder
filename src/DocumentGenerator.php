@@ -2,14 +2,13 @@
 
 namespace MaxiStyle\EtrnBuilder;
 
+use DOMDocument;
+use DOMElement;
 use DOMException;
 use Exception;
 use MaxiStyle\EtrnBuilder\Builders\T1Builder;
-use MaxiStyle\EtrnBuilder\Exception\XMLGenerationException;
 use MaxiStyle\EtrnBuilder\Exception\UnsupportedDocumentException;
-use MaxiStyle\EtrnBuilder\Builders\DocumentBuilderInterface;
-use DOMDocument;
-use DOMElement;
+use MaxiStyle\EtrnBuilder\Exception\XMLGenerationException;
 
 /**
  * Основной класс для генерации всего XML документа в формате ФНС
@@ -26,8 +25,8 @@ use DOMElement;
  */
 class DocumentGenerator
 {
-    /** @var string ID файла */
-    private string $fileId;
+    /** @var string Кодировка XML */
+    private string $charset = 'utf-8';
 
     /** @var array Массив билдеров */
     private array $builders = [];
@@ -74,25 +73,12 @@ class DocumentGenerator
         }
 
         try {
-            $dom = new DOMDocument('1.0', 'utf-8');
+            $dom = new DOMDocument('1.0', $this->charset);
             $dom->xmlStandalone = true; // Set standalone to true
             $dom->formatOutput = true;
 
-            $file = $dom->createElement('Файл');
-
-            // формируем ID файл
-            $R_T = $this->getCodeId($document); // вид документа
-            $A = '2IJ62D71303DEB34460944844996A07FF02'; // Перевозчик: первые три символа id оператора ЭДО, остальные GUID в ЭДО
-            $E = '2IJAAE212FD588C4A2CAF1681D80F4B6201'; // Грузополучатель: первые три символа id оператора ЭДО, остальные GUID в ЭДО
-            $O = '2IJ1B81F6C6614547D483EE92EA03C2F5D5'; // Грузоотправитель: первые три символа id оператора ЭДО, остальные GUID в ЭДО
-            $W = '0'; // признак наличия дополнительных получателей файла обмена информации грузоотправителя
-            $GGGGMMDD = date('Ymd'); // дата формирования файла
-            $N = '20250326_d0c9bb95-773f-4d34-af74-7e8ac03ec537'; // Глобально уникальный идентификатор документа, 36 символов
-            $this->fileId = "{$R_T}_{$A}_{$E}_{$O}_{$W}_{$GGGGMMDD}_01"; // ИМЯ ФАЙЛА
-
-            $file->setAttribute('ИдФайл', $this->fileId);
-
             // вклеиваем документ в файл
+            $file = $dom->createElement('Файл');
             $documentType = $this->getDocumentType($document);
             $builder = $this->builders[$documentType];
             $builder->build($dom, $file, $document);
@@ -112,11 +98,14 @@ class DocumentGenerator
     /**
      * Save XML to file with BOM for correct Cyrillic display in 1C
      */
-    public function saveToFile(string $xml, string $filename): bool
+    public function saveToFile(string $xml, string $filename, bool $withBom = true): bool
     {
-        $bom = pack('H*', 'EFBBBF');
-        $xmlWithBom = $bom . $xml;
-        return file_put_contents($filename, $xmlWithBom) !== false;
+        if ($withBom) {
+            $bom = pack('H*', 'EFBBBF');
+            $xml = $bom . $xml;
+        }
+
+        return file_put_contents($filename, $xml) !== false;
     }
 
     /**
@@ -143,6 +132,15 @@ class DocumentGenerator
         $class = get_class($document);
         $class = substr($class, strrpos($class, '\\') + 1);
         return $class; // Возвращаем в исходном регистре
+    }
+
+    /**
+     * @param string $charset
+     * @return void
+     */
+    public function setCharset(string $charset): void
+    {
+        $this->charset = $charset;
     }
 
     /**

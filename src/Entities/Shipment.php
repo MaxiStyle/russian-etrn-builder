@@ -12,9 +12,4 @@ class Shipment extends BaseEntity
      * @var ?string Содержание операции (константа)
      */
     public ?string $operation = 'Лицом, осуществляющим погрузку груза, при указанных обстоятельствах передан водителю груз с указанными характеристиками';
-
-    /**
-     * @var ?Shipper Сведения о грузоотправителе
-     */
-    public ?Shipper $shipper = null;
 }

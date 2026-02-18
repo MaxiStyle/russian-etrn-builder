@@ -15,6 +15,11 @@ class T1 extends Document
     public string $knd = '1110339';
 
     /**
+     * @var string ВерсФорм (константа)
+     */
+    public string $formatVersion = '5.01';
+
+    /**
      * @var string Наименование документа по факту хозяйственной жизни (константа)
      */
     public string $docName = 'Транспортная накладная, информация грузоотправителя';
@@ -25,9 +30,19 @@ class T1 extends Document
     public ?DateTimeInterface $dateFile = null;
 
     /**
+     * @var ?string Идентификатор файла
+     */
+    public ?string $fileId = null;
+
+    /**
+     * @var ?string Версия программы, с помощью которой сформирован файл
+     */
+    public ?string $softwareVersion = null;
+
+    /**
      * @var ?string UUID документа
      */
-    public ?string $documentId = null;
+    public ?string $documentUuid = null;
 
     /**
      * @var ?string Содержание транспортной накладной, информация грузоотправителя
@@ -43,6 +58,16 @@ class T1 extends Document
      * @var ?Carrier Сведения о перевозчике
      */
     public ?Carrier $carrier = null;
+
+    /**
+     * @var ?Shipper Сведения о грузоотправителе
+     */
+    public ?Shipper $shipper = null;
+
+    /**
+     * @var ?Customer Сведения о заказчике
+     */
+    public ?Customer $customer = null;
 
     /**
      * @var ?Driver Сведения о водителе

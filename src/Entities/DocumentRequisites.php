@@ -23,4 +23,8 @@ class DocumentRequisites extends BaseEntity
      * @var ?DateTimeInterface Дата документа
      */
     public ?DateTimeInterface $date = null;
+
+    /**
+     * @var array ИНН юридических лиц, составивших документ */
+    public array $legalParticipants = [];
 }

@@ -143,11 +143,17 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $svKaz->appendChild($rekIdentZak);
 
             $contract = $customer->contract;
-            $dokUslPer = $dom->createElement('ДогУслПер');
-            $this->append($dom, $dokUslPer, 'НаимДок', $contract->name);
-            $this->append($dom, $dokUslPer, 'НомерДок', $contract->number);
-            $this->append($dom, $dokUslPer, 'ДатаДок', $contract->date->format('d.m.Y'));
-            $svKaz->appendChild($dokUslPer);
+            $dogUslPer = $dom->createElement('ДогУслПер');
+            $dogUslPer->setAttribute('НаимДок', $contract->name ?? '');
+            $dogUslPer->setAttribute('НомерДок', $contract->number ?? '');
+            $dogUslPer->setAttribute('ДатаДок', $contract?->date?->format('d.m.Y') ?? '');
+
+            foreach ($contract->legalParticipants as $participant) {
+                $idRekSost = $dom->createElement('ИдРекСост');
+                $this->append($dom, $idRekSost, 'ИННЮЛ', $participant);
+                $dogUslPer->appendChild($idRekSost);
+            }
+            $svKaz->appendChild($dogUslPer);
 
             $sodInfGo->appendChild($svKaz);
         }

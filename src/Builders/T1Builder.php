@@ -323,55 +323,68 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $sodInfGo->appendChild($svPer);
         }
 
-        // ВОДИТЕЛЬ
-        if ($doc->driver !== null) {
-            $driver = $doc->driver;
-
+        // ВОДИТЕЛИ (один или несколько СвВодит)
+        foreach ($doc->drivers as $driver) {
             $voditel = $dom->createElement('СвВодит');
-            if (isset($driver->licenseSeries)) {
+            if (isset($driver->inn) && $driver->inn) {
+                $voditel->setAttribute('ИННФЛ', $driver->inn);
+            }
+            if (isset($driver->licenseSeries) && $driver->licenseSeries) {
                 $voditel->setAttribute('СерВУ', $driver->licenseSeries);
             }
-            if (isset($driver->licenseNumber)) {
+            if (isset($driver->licenseNumber) && $driver->licenseNumber) {
                 $voditel->setAttribute('НомВУ', $driver->licenseNumber);
             }
-            if (isset($driver->licenseIssueDate)) {
+            if (isset($driver->licenseIssueDate) && $driver->licenseIssueDate) {
                 $voditel->setAttribute('ДатаВыдВУ', $driver->licenseIssueDate);
             }
-            if (isset($driver->phone)) {
+            if (isset($driver->phone) && $driver->phone) {
                 $this->append($dom, $voditel, 'Тлф', $driver->phone);
             }
             $fio = $dom->createElement('ФИО');
-            $fio->setAttribute('Фамилия', $driver->lastName);
-            $fio->setAttribute('Имя', $driver->firstName);
-            $fio->setAttribute('Отчество', $driver->middleName);
+            $fio->setAttribute('Фамилия', $driver->lastName ?? '');
+            $fio->setAttribute('Имя', $driver->firstName ?? '');
+            if (!empty($driver->middleName)) {
+                $fio->setAttribute('Отчество', $driver->middleName);
+            }
             $voditel->appendChild($fio);
 
             $sodInfGo->appendChild($voditel);
         }
 
-        // ТРАНСПОРТНОЕ СРЕДСТВО
-        if ($doc->vehicle !== null) {
-            $vehicle = $doc->vehicle;
-
+        // ТРАНСПОРТНОЕ СРЕДСТВО (тягач + прицепы)
+        if ($doc->vehicle !== null || !empty($doc->trailers)) {
             $svTs = $dom->createElement('СвТС');
-            $ts = $dom->createElement('ТС');
-            $ts->setAttribute('РегНомер', $vehicle->regNumber);
-            $ts->setAttribute('ТипВлад', (string)$vehicle->ownershipType);
-            $parTs = $dom->createElement('ПарТС');
-            if (isset($vehicle->type)) {
-                $parTs->setAttribute('Тип', $vehicle->type);
+
+            if ($doc->vehicle !== null) {
+                $vehicle = $doc->vehicle;
+                $ts = $dom->createElement('ТС');
+                $ts->setAttribute('РегНомер', $vehicle->regNumber);
+                $ts->setAttribute('ТипВлад', (string)$vehicle->ownershipType);
+                $parTs = $dom->createElement('ПарТС');
+                if (isset($vehicle->type)) $parTs->setAttribute('Тип', $vehicle->type);
+                if (isset($vehicle->brand)) $parTs->setAttribute('Марка', $vehicle->brand);
+                if (isset($vehicle->carryingCapacity)) $parTs->setAttribute('Грузопод', (string)$vehicle->carryingCapacity);
+                if (isset($vehicle->capacity)) $parTs->setAttribute('Вместим', (string)$vehicle->capacity);
+                $ts->appendChild($parTs);
+                $svTs->appendChild($ts);
             }
-            if (isset($vehicle->brand)) {
-                $parTs->setAttribute('Марка', $vehicle->brand);
+
+            foreach ($doc->trailers as $trailer) {
+                $pritsep = $dom->createElement('Прицеп');
+                $pritsep->setAttribute('РегНомер', $trailer->regNumber);
+                $pritsep->setAttribute('ТипВлад', (string)$trailer->ownershipType);
+                if ($trailer->stsNumber !== null) $pritsep->setAttribute('НомСТС', $trailer->stsNumber);
+                if ($trailer->vin !== null) $pritsep->setAttribute('НомерВИН', $trailer->vin);
+                $parTs = $dom->createElement('ПарТС');
+                if (isset($trailer->type)) $parTs->setAttribute('Тип', $trailer->type);
+                if (isset($trailer->brand)) $parTs->setAttribute('Марка', $trailer->brand);
+                if (isset($trailer->carryingCapacity)) $parTs->setAttribute('Грузопод', (string)$trailer->carryingCapacity);
+                if (isset($trailer->capacity)) $parTs->setAttribute('Вместим', (string)$trailer->capacity);
+                $pritsep->appendChild($parTs);
+                $svTs->appendChild($pritsep);
             }
-            if (isset($vehicle->carryingCapacity)) {
-                $parTs->setAttribute('Грузопод', (string)$vehicle->carryingCapacity);
-            }
-            if (isset($vehicle->capacity)) {
-                $parTs->setAttribute('Вместим', (string)$vehicle->capacity);
-            }
-            $ts->appendChild($parTs);
-            $svTs->appendChild($ts);
+
             $sodInfGo->appendChild($svTs);
         }
 
@@ -447,6 +460,12 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $podpis->appendChild($fio);
 
             $document->appendChild($podpis);
+        }
+
+        // ИдПолИной — идентификатор иного получателя (FNS ID перевозчика), добавляется перед Документ
+        if (!empty($doc->recipientId)) {
+            $idPolInoi = $dom->createElement('ИдПолИной', $doc->recipientId);
+            $parent->appendChild($idPolInoi);
         }
 
         $parent->appendChild($document);

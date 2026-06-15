@@ -16,18 +16,15 @@ class Signatory extends BaseEntity
      */
     public string $status;
 
-    /**
-     * @var string Фамилия
-     */
+    /** @var string Фамилия */
     public string $lastName;
 
-    /**
-     * @var string Имя
-     */
+    /** @var string Имя */
     public string $firstName;
 
-    /**
-     * @var string Отчество
-     */
-    public string $middleName;
+    /** @var string Отчество */
+    public string $middleName = '';
+
+    /** @var string Должность */
+    public string $position = '';
 }

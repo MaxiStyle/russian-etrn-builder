@@ -37,4 +37,14 @@ class Vehicle extends BaseEntity
      * @var float Вместимость в кубических метрах
      */
     public float $capacity;
+
+    /**
+     * @var ?string Номер свидетельства о регистрации (НомСТС) — только для прицепа
+     */
+    public ?string $stsNumber = null;
+
+    /**
+     * @var ?string VIN номер (НомерВИН) — только для прицепа
+     */
+    public ?string $vin = null;
 }

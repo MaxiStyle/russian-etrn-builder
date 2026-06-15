@@ -70,14 +70,24 @@ class T1 extends Document
     public ?Customer $customer = null;
 
     /**
-     * @var ?Driver Сведения о водителе
+     * @var Driver[] Сведения о водителях (один или несколько СвВодит)
      */
-    public ?Driver $driver = null;
+    public array $drivers = [];
 
     /**
-     * @var ?Vehicle Сведения о транспортном средстве
+     * @var ?Vehicle Сведения о транспортном средстве (тягач)
      */
     public ?Vehicle $vehicle = null;
+
+    /**
+     * @var Vehicle[] Сведения о прицепах (Прицеп внутри СвТС)
+     */
+    public array $trailers = [];
+
+    /**
+     * @var ?string Идентификатор иного получателя файла обмена (ИдПолИной) — FNS ID перевозчика
+     */
+    public ?string $recipientId = null;
 
     /**
      * @var ?Route Сведения о передаче груза при приеме груза перевозчиком

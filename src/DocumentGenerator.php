@@ -8,6 +8,7 @@ use DOMException;
 use Exception;
 use MaxiStyle\EtrnBuilder\Builders\T1Builder;
 use MaxiStyle\EtrnBuilder\Builders\T2Builder;
+use MaxiStyle\EtrnBuilder\Builders\T3Builder;
 use MaxiStyle\EtrnBuilder\Exception\UnsupportedDocumentException;
 use MaxiStyle\EtrnBuilder\Exception\XMLGenerationException;
 
@@ -41,12 +42,12 @@ class DocumentGenerator
     public const string DOCUMENT_TYPE_T4 = 'T4';
 
 
-    public function __construct(string $version = '1.6', string $format = null)
+    public function __construct(string $version = '1.6', ?string $format = null)
     {
         // Register builders
         $this->builders[self::DOCUMENT_TYPE_T1] = new T1Builder();
         $this->builders[self::DOCUMENT_TYPE_T2] = new T2Builder();
-        //$this->builders[self::DOCUMENT_TYPE_T3] = new T3Builder();
+        $this->builders[self::DOCUMENT_TYPE_T3] = new T3Builder();
         //$this->builders[self::DOCUMENT_TYPE_T4] = new T4Builder();
 
         // Register id's code

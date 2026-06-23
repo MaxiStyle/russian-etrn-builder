@@ -31,5 +31,5 @@ class Customer extends BaseEntity
     /**
      * @var ?DocumentRequisites Реквизиты договора на выполнение услуг по организации перевозки груза
      */
-    public ?DocumentRequisites $contract;
+    public ?DocumentRequisites $contract = null;
 }

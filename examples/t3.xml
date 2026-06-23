@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Файл ИдФайл="ON_TRNACLGRPO_2IJEB7CB7F05C334776A5AAAA2BD0901EA4_2IJ45F993141A3F4EE3AF19A12F5DA8A44B_2IJ45F993141A3F4EE3AF19A13F5DA3A30C_0_20260623_572c2ab4-421f-4107-9e8d-e925b1d1d72f"
+      ВерсПрог="DropCat" ВерсФорм="5.01">
+    <Документ КНД="1110341" ПоФактХЖ="Транспортная накладная, информация грузополучателя о приеме груза"
+              ДатИнфГП="23.06.2026" ВрИнфГП="14:53:44"
+              НаимЭконСубСост="ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ &quot;СПУТНИК АВТО&quot;">
+        <ИдИнфПрвПрием
+                ИдФайлИнфПрвПрием="ON_TRNACLPPRIN_2IJ45F993141A3F4EE3AF19A13F5DA3A30C_2IJ45F993141A3F4EE3AF19A12F5DA8A44B_2IJEB7CB7F05C334776A5AAAA2BD0901EA4_0_20260609_9be43d20-eea5-4e43-bc48-3a3eba682424"
+                ДатФайлПрвПрием="09.06.2026" ВрФайлПрвПрием="14:02:58"
+                ЭП="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"/>
+        <СодИнфГП УИД_ТрН="006b4a8f-fbe7-45a0-a37e-11d6b6980967"
+                  СодОпПр="Лицом, управомоченным на получение груза, при указанных обстоятельствах принят от перевозчика груз с указанными характеристиками">
+            <ПриемГрузГП ФДатВрПриб="22.06.2026T00:00:00+03:00" НалКоорТочВрФПр="1"
+                         ФДатВрУбыт="22.06.2026T00:10:00+03:00" НалКоорТочВрФУб="1"
+                         ЗаявДатВрПриб="22.06.2026T00:15:00+03:00" НалКоорТочВрЗПр="1" МетОпрМасс="01" КолМестПриемЧ="1"
+                         ОбщСвСост="-" МасБрутЗначПрием="1000">
+                <АдрВыгруз>
+                    <АдресИнф КодСтр="643" АдрТекст="г Санкт-Петербург"/>
+                </АдрВыгруз>
+                <СвПринПоНаим КолМест="5" НаимГруз="фывфыв" СостГруз="Отсутствует">
+                    <ПерМарк>Отсутствует</ПерМарк>
+                    <МасГруз МасБрутЗнач="2000"/>
+                </СвПринПоНаим>
+            </ПриемГрузГП>
+            <ИнфПол>
+                <ТекстИнф Идентиф="ДатаПЭП" Значение="23.06.2026"/>
+                <ТекстИнф Идентиф="ВремяПЭП" Значение="14:54:15"/>
+                <ТекстИнф Идентиф="ФамилияПЭП" Значение="Смирнов"/>
+                <ТекстИнф Идентиф="ИмяПЭП" Значение="Максим"/>
+                <ТекстИнф Идентиф="ОтчествоПЭП" Значение="Константинович"/>
+            </ИнфПол>
+        </СодИнфГП>
+        <Подписант СтатПодп="1" Должн="Генеральный директор">
+            <ФИО Фамилия="Горпарков" Имя="Сергей" Отчество="Сергеевич"/>
+        </Подписант>
+    </Документ>
+</Файл>

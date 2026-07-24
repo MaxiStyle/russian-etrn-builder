@@ -79,10 +79,7 @@ class T3Builder extends DocumentBuilder implements DocumentBuilderInterface
         // АдрВыгруз
         if ($doc->unloadingAddress !== null) {
             $adr = $dom->createElement('АдрВыгруз');
-            $adrInf = $dom->createElement('АдресИнф');
-            $adrInf->setAttribute('КодСтр', $doc->unloadingAddress->countryCode ?? '643');
-            $adrInf->setAttribute('АдрТекст', $doc->unloadingAddress->full ?? '');
-            $adr->appendChild($adrInf);
+            $this->appendAddressRf($dom, $adr, $doc->unloadingAddress);
             $priemGp->appendChild($adr);
         }
 

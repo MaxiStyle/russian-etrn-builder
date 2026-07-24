@@ -215,11 +215,7 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             // Адрес доставки груза
             if (isset($consignee->deliveryAddress)) {
                 $adr = $dom->createElement('АдресДостГр');
-                $deliveryAddress = $consignee->deliveryAddress;
-                $adrRf = $dom->createElement('АдресИнф');
-                $adrRf->setAttribute('КодСтр', $deliveryAddress->countryCode ?? '643');
-                $adrRf->setAttribute('АдрТекст', $deliveryAddress->full ?? '');
-                $adr->appendChild($adrRf);
+                $this->appendAddressRf($dom, $adr, $consignee->deliveryAddress);
                 $svGp->appendChild($adr);
             }
 
@@ -408,11 +404,7 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             // Адрес места погрузки
             if ($route->loadingAddress !== null) {
                 $adr = $dom->createElement('ФАдресПогр');
-                $loadingAddress = $route->loadingAddress;
-                $adrRf = $dom->createElement('АдресИнф');
-                $adrRf->setAttribute('КодСтр', $loadingAddress->countryCode ?? '643');
-                $adrRf->setAttribute('АдрТекст', $loadingAddress->full ?? '');
-                $adr->appendChild($adrRf);
+                $this->appendAddressRf($dom, $adr, $route->loadingAddress);
                 $svPogruz->appendChild($adr);
             }
 

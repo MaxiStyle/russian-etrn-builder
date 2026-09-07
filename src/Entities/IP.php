@@ -9,9 +9,19 @@ namespace MaxiStyle\EtrnBuilder\Entities;
 class IP extends BaseEntity
 {
     /**
-     * @var ?string ФИО
+     * @var ?string Фамилия
      */
-    public ?string $fio;
+    public ?string $lastName;
+
+    /**
+     * @var ?string Имя
+     */
+    public ?string $firstName;
+
+    /**
+     * @var ?string Отчество (не обязательно)
+     */
+    public ?string $middleName;
 
     /**
      * @var ?string ИНН физлица

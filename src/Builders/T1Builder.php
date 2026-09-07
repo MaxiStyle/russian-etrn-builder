@@ -51,20 +51,24 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
 
         $rekIdentGo = $dom->createElement('РекИдентГО');
         $idSv = $dom->createElement('ИдСв');
-        if ($shipper->legalEntity !== null) {
+        if (isset($shipper->legalEntity)) {
             $ul = $shipper->legalEntity;
             $svYuLuch = $dom->createElement('СвЮЛУч');
             $svYuLuch->setAttribute('НаимОрг', $ul->name);
             $svYuLuch->setAttribute('ИННЮЛ', $ul->inn);
             $svYuLuch->setAttribute('КПП', $ul->kpp);
             $idSv->appendChild($svYuLuch);
-        } else if ($shipper->ip !== null) {
+        } else if (isset($shipper->ip)) {
             $ip = $shipper->ip;
             $svIp = $dom->createElement('СвИП');
-            $svIp->setAttribute('ФИО', $ip->fio);
             $svIp->setAttribute('ИННФЛ', $ip->inn);
-            $svIp->setAttribute('ОГРНИП', $ip->ogrnip);
-            $svIp->setAttribute('ИныеСвед', $ip->other);
+            if (!empty($ip->ogrnip)) $svIp->setAttribute('ОГРНИП', $ip->ogrnip);
+            if (!empty($ip->other)) $svIp->setAttribute('ИныеСвед', $ip->other);
+            $ipFio = $dom->createElement('ФИО');
+            $ipFio->setAttribute('Фамилия', $ip->lastName ?? '');
+            $ipFio->setAttribute('Имя', $ip->firstName ?? '');
+            if (!empty($ip->middleName)) $ipFio->setAttribute('Отчество', $ip->middleName);
+            $svIp->appendChild($ipFio);
             $idSv->appendChild($svIp);
         }
         $rekIdentGo->appendChild($idSv);
@@ -101,20 +105,24 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
 
             $rekIdentZak = $dom->createElement('РекИдентЗак');
             $idSv = $dom->createElement('ИдСв');
-            if ($customer->legalEntity !== null) {
+            if (isset($customer->legalEntity)) {
                 $ul = $customer->legalEntity;
                 $svYuLuch = $dom->createElement('СвЮЛУч');
                 $svYuLuch->setAttribute('НаимОрг', $ul->name);
                 $svYuLuch->setAttribute('ИННЮЛ', $ul->inn);
                 $svYuLuch->setAttribute('КПП', $ul->kpp);
                 $idSv->appendChild($svYuLuch);
-            } else if ($customer->ip !== null) {
+            } else if (isset($customer->ip)) {
                 $ip = $customer->ip;
                 $svIp = $dom->createElement('СвИП');
-                $svIp->setAttribute('ФИО', $ip->fio);
                 $svIp->setAttribute('ИННФЛ', $ip->inn);
-                $svIp->setAttribute('ОГРНИП', $ip->ogrnip);
-                $svIp->setAttribute('ИныеСвед', $ip->other);
+                if (!empty($ip->ogrnip)) $svIp->setAttribute('ОГРНИП', $ip->ogrnip);
+                if (!empty($ip->other)) $svIp->setAttribute('ИныеСвед', $ip->other);
+                $ipFio = $dom->createElement('ФИО');
+                $ipFio->setAttribute('Фамилия', $ip->lastName ?? '');
+                $ipFio->setAttribute('Имя', $ip->firstName ?? '');
+                if (!empty($ip->middleName)) $ipFio->setAttribute('Отчество', $ip->middleName);
+                $svIp->appendChild($ipFio);
                 $idSv->appendChild($svIp);
             }
             $rekIdentZak->appendChild($idSv);
@@ -168,20 +176,24 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $rekIdentGp = $dom->createElement('РекИдентГП');
 
             $idSv = $dom->createElement('ИдСв');
-            if ($consignee->legalEntity !== null) {
+            if (isset($consignee->legalEntity)) {
                 $ul = $consignee->legalEntity;
                 $svYuLuch = $dom->createElement('СвЮЛУч');
                 $svYuLuch->setAttribute('НаимОрг', $ul->name);
                 $svYuLuch->setAttribute('ИННЮЛ', $ul->inn);
                 $svYuLuch->setAttribute('КПП', $ul->kpp);
                 $idSv->appendChild($svYuLuch);
-            } else if ($consignee->ip !== null) {
+            } else if (isset($consignee->ip)) {
                 $ip = $consignee->ip;
                 $svIp = $dom->createElement('СвИП');
-                $svIp->setAttribute('ФИО', $ip->fio);
                 $svIp->setAttribute('ИННФЛ', $ip->inn);
-                $svIp->setAttribute('ОГРНИП', $ip->ogrnip);
-                $svIp->setAttribute('ИныеСвед', $ip->other);
+                if (!empty($ip->ogrnip)) $svIp->setAttribute('ОГРНИП', $ip->ogrnip);
+                if (!empty($ip->other)) $svIp->setAttribute('ИныеСвед', $ip->other);
+                $ipFio = $dom->createElement('ФИО');
+                $ipFio->setAttribute('Фамилия', $ip->lastName ?? '');
+                $ipFio->setAttribute('Имя', $ip->firstName ?? '');
+                if (!empty($ip->middleName)) $ipFio->setAttribute('Отчество', $ip->middleName);
+                $svIp->appendChild($ipFio);
                 $idSv->appendChild($svIp);
             }
             $rekIdentGp->appendChild($idSv);
@@ -276,20 +288,24 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $svPer = $dom->createElement('СвПер');
 
             $idSv = $dom->createElement('ИдСв');
-            if ($carrier->legalEntity !== null) {
+            if (isset($carrier->legalEntity)) {
                 $ul = $carrier->legalEntity;
                 $svYuLuch = $dom->createElement('СвЮЛУч');
                 $svYuLuch->setAttribute('НаимОрг', $ul->name);
                 $svYuLuch->setAttribute('ИННЮЛ', $ul->inn);
                 $svYuLuch->setAttribute('КПП', $ul->kpp);
                 $idSv->appendChild($svYuLuch);
-            } else if ($carrier->ip !== null) {
+            } else if (isset($carrier->ip)) {
                 $ip = $carrier->ip;
                 $svIp = $dom->createElement('СвИП');
-                $svIp->setAttribute('ФИО', $ip->fio);
                 $svIp->setAttribute('ИННФЛ', $ip->inn);
-                $svIp->setAttribute('ОГРНИП', $ip->ogrnip);
-                $svIp->setAttribute('ИныеСвед', $ip->other);
+                if (!empty($ip->ogrnip)) $svIp->setAttribute('ОГРНИП', $ip->ogrnip);
+                if (!empty($ip->other)) $svIp->setAttribute('ИныеСвед', $ip->other);
+                $ipFio = $dom->createElement('ФИО');
+                $ipFio->setAttribute('Фамилия', $ip->lastName ?? '');
+                $ipFio->setAttribute('Имя', $ip->firstName ?? '');
+                if (!empty($ip->middleName)) $ipFio->setAttribute('Отчество', $ip->middleName);
+                $svIp->appendChild($ipFio);
                 $idSv->appendChild($svIp);
             }
             $svPer->appendChild($idSv);
@@ -412,9 +428,9 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $lico = $dom->createElement('СвЛицПогрГр');
             $lico->setAttribute('СовпГОП', '1'); // Признак совпадения с грузоотправителем
             $identRekGo = $dom->createElement('ИдентРекГО');
-            if ($shipper->legalEntity !== null) {
+            if (isset($shipper->legalEntity)) {
                 $inn = $dom->createElement('ИННЮЛ', $shipper->legalEntity->inn);
-            } else if ($shipper->ip !== null) {
+            } else if (isset($shipper->ip)) {
                 $inn = $dom->createElement('ИННФЛ', $shipper->ip->inn);
             } else {
                 $inn = $dom->createElement('ИННЮЛ', '');
@@ -427,9 +443,9 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $vlad = $dom->createElement('ВладИнфр');
             $vlad->setAttribute('СовпГОВ', '1'); // Признак совпадения с грузоотправителем
             $identRekGo = $dom->createElement('ИдентРекГО');
-            if ($shipper->legalEntity !== null) {
+            if (isset($shipper->legalEntity)) {
                 $inn = $dom->createElement('ИННЮЛ', $shipper->legalEntity->inn);
-            } else if ($shipper->ip !== null) {
+            } else if (isset($shipper->ip)) {
                 $inn = $dom->createElement('ИННФЛ', $shipper->ip->inn);
             } else {
                 $inn = $dom->createElement('ИННЮЛ', '');

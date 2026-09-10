@@ -158,9 +158,7 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
                 $dogUslPer->setAttribute('ДатаДок', $contract?->date?->format('d.m.Y') ?? '');
 
                 foreach ($contract->legalParticipants as $participant) {
-                    $idRekSost = $dom->createElement('ИдРекСост');
-                    $this->append($dom, $idRekSost, 'ИННЮЛ', $participant);
-                    $dogUslPer->appendChild($idRekSost);
+                    $this->appendIdRekSost($dom, $dogUslPer, (string)$participant);
                 }
                 $svKaz->appendChild($dogUslPer);
             }
@@ -381,6 +379,7 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
                 if (isset($vehicle->carryingCapacity)) $parTs->setAttribute('Грузопод', (string)$vehicle->carryingCapacity);
                 if (isset($vehicle->capacity)) $parTs->setAttribute('Вместим', (string)$vehicle->capacity);
                 $ts->appendChild($parTs);
+                $this->appendRentLeaseDocument($dom, $ts, $vehicle->rentLeaseDocument ?? null);
                 $svTs->appendChild($ts);
             }
 
@@ -396,6 +395,7 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
                 if (isset($trailer->carryingCapacity)) $parTs->setAttribute('Грузопод', (string)$trailer->carryingCapacity);
                 if (isset($trailer->capacity)) $parTs->setAttribute('Вместим', (string)$trailer->capacity);
                 $pritsep->appendChild($parTs);
+                $this->appendRentLeaseDocument($dom, $pritsep, $trailer->rentLeaseDocument ?? null);
                 $svTs->appendChild($pritsep);
             }
 

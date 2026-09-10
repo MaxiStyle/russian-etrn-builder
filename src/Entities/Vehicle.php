@@ -47,4 +47,11 @@ class Vehicle extends BaseEntity
      * @var ?string VIN номер (НомерВИН) — только для прицепа
      */
     public ?string $vin = null;
+
+    /**
+     * @var ?DocumentRequisites Реквизиты документа-основания аренды/лизинга/безвозмездного пользования (ОснАрЛиз).
+     * Обязателен при ownershipType ∈ {3 аренда, 4 лизинг, 5 безвозмездное пользование}.
+     * legalParticipants — минимум одна сторона (ИНН арендатора/лизингополучателя).
+     */
+    public ?DocumentRequisites $rentLeaseDocument = null;
 }

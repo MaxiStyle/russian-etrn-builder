@@ -49,12 +49,11 @@ class T3Builder extends DocumentBuilder implements DocumentBuilderInterface
         $document->setAttribute('НаимЭконСубСост', $doc->composerName);
 
         // Ссылка на файл обмена T2 (перевозчика)
-        $idInfPrvPriem = $dom->createElement('ИдИнфПрвПрием');
-        $idInfPrvPriem->setAttribute('ИдФайлИнфПрвПрием', $doc->t2FileId);
-        $idInfPrvPriem->setAttribute('ДатФайлПрвПрием', $doc->t2FileDate);
-        $idInfPrvPriem->setAttribute('ВрФайлПрвПрием', $doc->t2FileTime);
-        $idInfPrvPriem->setAttribute('ЭП', $doc->t2Signature);
-        $document->appendChild($idInfPrvPriem);
+        $this->appendReference(
+            $dom, $document, 'ИдИнфПрвПрием',
+            'ИдФайлИнфПрвПрием', 'ДатФайлПрвПрием', 'ВрФайлПрвПрием',
+            $doc->t2FileId, $doc->t2FileDate, $doc->t2FileTime, $doc->t2Signature,
+        );
 
         // Содержание — информация грузополучателя
         $sodInfGp = $dom->createElement('СодИнфГП');
@@ -104,20 +103,7 @@ class T3Builder extends DocumentBuilder implements DocumentBuilderInterface
 
         // Подписант
         if ($doc->signatory !== null) {
-            $signatory = $doc->signatory;
-            $podpis = $dom->createElement('Подписант');
-            $podpis->setAttribute('СтатПодп', $signatory->status);
-            if ($signatory->position !== '') {
-                $podpis->setAttribute('Должн', $signatory->position);
-            }
-            $fio = $dom->createElement('ФИО');
-            $fio->setAttribute('Фамилия', $signatory->lastName);
-            $fio->setAttribute('Имя', $signatory->firstName);
-            if ($signatory->middleName !== '') {
-                $fio->setAttribute('Отчество', $signatory->middleName);
-            }
-            $podpis->appendChild($fio);
-            $document->appendChild($podpis);
+            $this->appendSignatory($dom, $document, $doc->signatory);
         }
 
         $parent->appendChild($document);

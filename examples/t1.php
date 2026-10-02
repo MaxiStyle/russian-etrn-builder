@@ -18,7 +18,11 @@ $contactShipper->phone = '+7 222 888 44 44';
 
 // Адрес грузоотправителя
 $addressShipper = new Entities\Address();
-$addressShipper->full = 'Хабаровский край, г Хабаровск, Суворова улица 82А';
+$addressShipper->index = '680000';
+$addressShipper->regionCode = '27';
+$addressShipper->city = 'Хабаровск';
+$addressShipper->street = 'Суворова';
+$addressShipper->house = '82А';
 $addressShipper->countryCode = '643';
 
 // Юридическое лицо грузоотправителя
@@ -29,13 +33,13 @@ $legalEntityShipper->kpp = '272301001';
 
 // Создаем грузоотправителя
 $svGO = new Entities\Shipper();
-$svGO->goEksp = 0; // грузоотправитель является / не является экспедитором
+$svGO->status = 0; // 0 — не является экспедитором, 1 — является (тогда обязателен блок «Заказчик»)
 $svGO->legalEntity = $legalEntityShipper;
 $svGO->address = $addressShipper;
 $svGO->contact = $contactShipper;
 
+// СодИнфГО хранит только константу operation; сам грузоотправитель кладётся в T1::shipper
 $sodInfGO = new Entities\Shipment();
-$sodInfGO->shipper = $svGO;
 
 // ========================================
 // ГРУЗОПОЛУЧАТЕЛЬ
@@ -47,7 +51,12 @@ $contactConsignee->phone = '+7 495 123 45 67';
 
 // Адрес грузополучателя
 $addressConsignee = new Entities\Address();
-$addressConsignee->full = 'г. Москва, ул. Тверская, д. 15, офис 101';
+$addressConsignee->index = '125009';
+$addressConsignee->regionCode = '77';
+$addressConsignee->city = 'Москва';
+$addressConsignee->street = 'Тверская';
+$addressConsignee->house = '15';
+$addressConsignee->flat = '101';
 $addressConsignee->countryCode = '643';
 
 // Юридическое лицо грузополучателя
@@ -58,8 +67,13 @@ $legalEntityConsignee->kpp = '770801001';
 
 // Адрес доставки груза
 $deliveryAddress = new Entities\Address();
-$deliveryAddress->full = 'Московская область, г. Одинцово, ул. Ленина, д. 25';
+$deliveryAddress->index = '143000';
+$deliveryAddress->regionCode = '50';
+$deliveryAddress->city = 'Одинцово';
+$deliveryAddress->street = 'Ленина';
+$deliveryAddress->house = '25';
 $deliveryAddress->countryCode = '643';
+$deliveryAddress->full = 'Московская область, г. Одинцово, ул. Ленина, д. 25';
 
 // Создаем грузополучателя
 $consignee = new Entities\Consignee();
@@ -78,7 +92,11 @@ $contactCarrier->phone = '+7 812 987 65 43';
 
 // Адрес перевозчика
 $addressCarrier = new Entities\Address();
-$addressCarrier->full = 'г. Санкт-Петербург, Невский проспект, д. 28';
+$addressCarrier->index = '191186';
+$addressCarrier->regionCode = '78';
+$addressCarrier->city = 'Санкт-Петербург';
+$addressCarrier->street = 'Невский проспект';
+$addressCarrier->house = '28';
 $addressCarrier->countryCode = '643';
 
 // Юридическое лицо перевозчика
@@ -137,13 +155,19 @@ $cargo->plannedWeight = 18500.5; // 18.5 тонн
 
 // Адрес места погрузки
 $loadingAddress = new Entities\Address();
-$loadingAddress->full = 'Хабаровский край, г Хабаровск, Суворова улица 82А';
+$loadingAddress->index = '680000';
+$loadingAddress->regionCode = '27';
+$loadingAddress->city = 'Хабаровск';
+$loadingAddress->street = 'Суворова';
+$loadingAddress->house = '82А';
 $loadingAddress->countryCode = '643';
+$loadingAddress->full = 'Хабаровский край, г Хабаровск, Суворова улица 82А';
 
+// Даты/времена в формате ДатаВремяВЗТип (25 символов: ДД.ММ.ГГГГTЧЧ:ММ:СС±ЧЧ:ММ)
 $route = new Entities\Route();
-$route->plannedArrival = '2024-01-15 09:00';
-$route->actualArrival = '2024-01-15 09:15';
-$route->actualDeparture = '2024-01-15 11:30';
+$route->plannedArrival = '15.01.2024T09:00:00+10:00';
+$route->actualArrival = '15.01.2024T09:15:00+10:00';
+$route->actualDeparture = '15.01.2024T11:30:00+10:00';
 $route->grossWeight = 18500.5;
 $route->weightDeterminationMethod = '01'; // Взвешивание по общей массе
 $route->cargoUnitsReceived = 1;
@@ -154,11 +178,11 @@ $route->loadingAddress = $loadingAddress;
 // ========================================
 
 $conditions = new Entities\Conditions();
-$conditions->noTransshipment = 'Запрещено';
-$conditions->deliveryDateTime = '2024-01-17 18:00';
-$conditions->redirectionPerson = 'Менеджер отправителя';
-$conditions->redirectionMethod = 'Телефон, Email';
-$conditions->contactInfo = '+7 222 888 44 44, manager@mnogovozoff.ru';
+$conditions->noTransshipment = '1'; // 1 — запрещена; 0 — разрешена (enum XSD)
+$conditions->deliveryDateTime = '17.01.2024T18:00:00+03:00';
+$conditions->redirectionPerson = 'Грузоотправитель'; // enum XSD
+$conditions->redirectionMethod = 'Электронное уведомление перевозчика о переадресовке'; // enum XSD
+$conditions->contactInfo = '+7 222 888 44 44';
 
 // ========================================
 // ПОДПИСАНТ
@@ -175,15 +199,19 @@ $signatory->middleName = 'Викторович';
 // ========================================
 
 $doc = new Entities\T1();
+$doc->fileId = 'ON_TRNACLGROT_2AE_2AO_2AP_20260916_c266b270-886c-4d58-aff4-c68c8b7e21ee';
+$doc->softwareVersion = 'MAG 1.0';
+$doc->documentUuid = '00000000-0000-0000-0000-000000000001'; // УИД_ТрН из пула ГИС ЭПД
 $doc->transportNumber = 'ТН-001'; // Порядковый номер транспортной накладной
 $doc->orderNumber = 'Без номера'; // Порядковый номер заказа (заявки)
 $doc->transportDate = new DateTime(); // Дата составления транспортной накладной
 $doc->orderDate = new DateTime(); // Дата заказа (заявки)
 $doc->dateFile = new DateTime(); // Дата и время формирования файла обмена информации грузоотправителя
-$doc->shipment = $sodInfGO; // Информация грузоотправителя
+$doc->shipment = $sodInfGO; // Информация грузоотправителя (константа СодОпер)
+$doc->shipper = $svGO; // Сведения о грузоотправителе (СвГО)
 $doc->consignee = $consignee; // Информация грузополучателя
 $doc->carrier = $carrier; // Информация о перевозчике
-$doc->driver = $driver; // Информация о водителе
+$doc->drivers = [$driver]; // Сведения о водителях (один или несколько СвВодит)
 $doc->vehicle = $vehicle; // Информация о транспортном средстве
 $doc->route = $route; // Информация о маршруте
 $doc->cargo = $cargo; // Информация о грузе

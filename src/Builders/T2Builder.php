@@ -40,12 +40,11 @@ class T2Builder extends DocumentBuilder implements DocumentBuilderInterface
         $document->setAttribute('ВрИнфПрвПрием', $doc->dateFile->format('H:i:s'));
 
         // Ссылка на файл обмена T1 (грузоотправителя)
-        $idInfGO = $dom->createElement('ИдИнфГО');
-        $idInfGO->setAttribute('ИдФайлИнфГО', $doc->t1FileId);
-        $idInfGO->setAttribute('ДатФайлИнфГО', $doc->t1FileDate);
-        $idInfGO->setAttribute('ВрФайлИнфГО', $doc->t1FileTime);
-        $idInfGO->setAttribute('ЭП', $doc->t1Signature);
-        $document->appendChild($idInfGO);
+        $this->appendReference(
+            $dom, $document, 'ИдИнфГО',
+            'ИдФайлИнфГО', 'ДатФайлИнфГО', 'ВрФайлИнфГО',
+            $doc->t1FileId, $doc->t1FileDate, $doc->t1FileTime, $doc->t1Signature,
+        );
 
         // Содержание — только UUID и текст операции
         $sodInf = $dom->createElement('СодИнфПрвПрием');
@@ -55,20 +54,7 @@ class T2Builder extends DocumentBuilder implements DocumentBuilderInterface
 
         // Подписант
         if ($doc->signatory !== null) {
-            $signatory = $doc->signatory;
-            $podpis = $dom->createElement('Подписант');
-            $podpis->setAttribute('СтатПодп', $signatory->status);
-            if ($signatory->position !== '') {
-                $podpis->setAttribute('Должн', $signatory->position);
-            }
-            $fio = $dom->createElement('ФИО');
-            $fio->setAttribute('Фамилия', $signatory->lastName);
-            $fio->setAttribute('Имя', $signatory->firstName);
-            if ($signatory->middleName !== '') {
-                $fio->setAttribute('Отчество', $signatory->middleName);
-            }
-            $podpis->appendChild($fio);
-            $document->appendChild($podpis);
+            $this->appendSignatory($dom, $document, $doc->signatory);
         }
 
         $parent->appendChild($document);

@@ -1,100 +1,94 @@
 # Russian ETRN Builder
 
-PHP библиотека для создания электронных транспортных накладных (ЭТрН) в формате ФНС.
+PHP-библиотека для генерации XML-документов ФНС по электронной транспортной накладной (ЭТрН)
+и электронному заказу/заявке на перевозку (ЭЗЗ). Форматы утверждены приказами ФНС России
+№ ЕД-7-26/823@ и № ЕД-7-26/108@; версия формата — 5.01, кодировка `windows-1251` или `utf-8`.
 
-## Описание
+## Поддерживаемые документы
 
-Библиотека предназначена для генерации XML документов электронных транспортных накладных в соответствии с требованиями ФНС России. Поддерживает создание всех титулов ЭТрН документов.
+### ЭТрН (транспортная накладная)
 
-### Поддерживаемые титулы
+| Титул | Префикс файла  | КНД     | Кто формирует     | Билдер             |
+|-------|----------------|---------|-------------------|--------------------|
+| T1    | ON_TRNACLGROT  | 1110339 | Грузоотправитель  | `T1Builder`        |
+| T2    | ON_TRNACLPPRIN | 1110340 | Перевозчик        | `T2Builder`        |
+| T3    | ON_TRNACLGRPO  | 1110341 | Грузополучатель   | `T3Builder`        |
+| T4    | ON_TRNACLPVYN  | 1110342 | Перевозчик        | `T4Builder`        |
 
-| Титул | Код документа | Описание | Статус |
-|-------|---------------|----------|--------|
-| Т1 | ON_TRNACLGROT | Информация о грузе, ТС, водителе (Грузоотправитель) | ✅ Поддерживается |
-| Т2 | ON_TRNACLPPRIN | Принятие груза к перевозке (Перевозчик) | 🚧 В разработке |
-| Т3 | ON_TRNACLGRPO | Приемка груза, состояние при выгрузке (Грузополучатель) | 🚧 В разработке |
-| Т4 | ON_TRNACLPVYN | Выдача груза, замечания по выгрузке (Перевозчик) | 🚧 В разработке |
+### ЭЗЗ (электронный заказ/заявка на перевозку)
+
+| Титул | Префикс файла | КНД     | Кто формирует    | Билдер            |
+|-------|---------------|---------|------------------|-------------------|
+| T1    | ON_ZAKZVGO    | 1110361 | Грузоотправитель | `OrderT1Builder`  |
+| T2    | ON_ZAKZVPER   | 1110362 | Перевозчик       | `OrderT2Builder`  |
+
+Дополнительно T1 ЭТрН поддерживает блок `ИдЗак` — ссылку на подписанный электронный заказ/заявку
+(поля `T1::$orderFileId/orderFileDate/orderFileTime/orderFileSignature`).
 
 ## Требования
 
 - PHP >= 8.1
-- Расширение DOM для PHP
+- Расширения `ext-dom`, `ext-libxml`
 
 ## Установка
-
-### Через Composer
 
 ```bash
 composer require maxistyle/russian-etrn-builder
 ```
 
-### Ручная установка
-
-1. Скачайте библиотеку
-2. Подключите автозагрузчик:
-
-```php
-require_once 'vendor/autoload.php';
-```
-
 ## Быстрый старт
 
-### Создание титула Т1
+### T1 ЭТрН
 
 ```php
-<?php
-
-require_once __DIR__ . '/vendor/autoload.php';
-
 use MaxiStyle\EtrnBuilder\DocumentGenerator;
 use MaxiStyle\EtrnBuilder\Entities;
 
-// Создаем контакты грузоотправителя
-$contact = new Entities\Contact();
-$contact->set('phone', '+7 222 888 44 44');
-
-// Создаем адрес грузоотправителя
-$address = new Entities\Address();
-$address->set('full', 'Хабаровский край, г Хабаровск, Суворова улица 82А')
-    ->set('countryCode', '643');
-
-// Создаем юридическое лицо
-$ul = new Entities\LegalEntity();
-$ul->set('name', 'ООО "МНОГОВОЗОФФ"')
-    ->set('inn', '2724218020')
-    ->set('kpp', '272301001');
-
-// Создаем сведения о грузоотправителе
-$svGO = new Entities\Shipper();
-$svGO->set('goEksp', 0) // грузоотправитель не является экспедитором
-    ->set('ul', $ul)
-    ->set('address', $address)
-    ->set('contact', $contact);
-
-// Создаем содержание информации грузоотправителя
-$sodInfGO = new Entities\Shipment();
-$sodInfGO->set('svGO', $svGO);
-
-// Создаем документ Т1
 $doc = new Entities\T1();
-$doc->set('numTrN', 'ТН-001') // номер транспортной накладной
-    ->set('numOrder', 'Без номера') // номер заказа
-    ->set('dateTrN', new DateTime()) // дата транспортной накладной
-    ->set('dateOrder', new DateTime()) // дата заказа
-    ->set('dateFile', new DateTime()) // дата формирования файла
-    ->set('sodInfGO', $sodInfGO);
+$doc->fileId = 'ON_TRNACLGROT_2AE_2AO_2AP_20260916_uuid';
+$doc->softwareVersion = 'MAG 1.0';
+$doc->documentUuid = '00000000-0000-0000-0000-000000000001';
+$doc->dateFile = new DateTime();
+// ... заполнение shipper, consignee, carrier, drivers, vehicle, route, cargo, conditions, signatory
 
-// Генерируем XML
 $generator = new DocumentGenerator();
+$xml = $generator->generate($doc);
+$generator->saveToFile($xml, 'trn.xml');
 
-try {
-    $xml = $generator->generate($doc);
-    $generator->saveToFile($xml, './example.xml');
-    
-    echo 'XML файл успешно создан!';
-} catch (Exception $e) {
-    echo 'Ошибка: ' . $e->getMessage();
-}
+// Полный пример: examples/t1.php
+```
+
+### T1 ЭЗЗ (заказ/заявка на перевозку)
+
+```php
+use MaxiStyle\EtrnBuilder\DocumentGenerator;
+use MaxiStyle\EtrnBuilder\Entities;
+use MaxiStyle\EtrnBuilder\Enums\Order;
+
+$doc = new Entities\OrderT1();
+$doc->fileId = 'ON_ZAKZVGO_2AE_2AO_20260916_uuid';
+$doc->softwareVersion = 'MAG 1.0';
+$doc->function = Order::FUNCTION_REQUEST; // 'Заявка' (или FUNCTION_ORDER — 'Заказ')
+$doc->dateFile = new DateTime();
+$doc->composerName = 'ООО "МНОГОВОЗОФФ"';
+$doc->orderNumber = '42/12';
+$doc->orderDate = new DateTime();
+$doc->regulatoryInstructions = 'Согласно Правилам перевозок грузов автомобильным транспортом';
+$doc->foodTransport = false;
+// ... shipper, carrier (Participant), supplyPoint, routePoints (Погрузка+Выгрузка), cargos,
+//     vehicleRequirements, signatory (OrderSignatory); при function='Заявка' — contract (DocumentRequisites)
+
+$generator = new DocumentGenerator();
+$generator->setCharset('windows-1251');
+$xml = $generator->generate($doc);
+
+// Валидация по официальной XSD ФНС
+$errors = $generator->validate($xml, __DIR__ . '/examples/order_t1.xsd');
+if ($errors) { /* обработать errors: массив строк "line:col: message" */ }
+
+$generator->saveToFile($xml, 'order_t1.xml');
+
+// Полный пример: examples/order_t1.php
 ```
 
 ## Структура проекта
@@ -102,26 +96,42 @@ try {
 ```
 russian-etrn-builder/
 ├── src/
-│   ├── DocumentGenerator.php      # Основной класс генерации
-│   ├── Builders/                  # Билдеры для каждого титула
-│   │   ├── DocumentBuilder.php    # Базовый билдер
+│   ├── DocumentGenerator.php         # Регистрация билдеров, generate(), validate(), setCharset()
+│   ├── Builders/
+│   │   ├── DocumentBuilder.php       # Общие helpers: appendFio/Identity/Contact/InlineAddressRf/
+│   │   │                             #                Signatory/Reference/AddressRf, setAttributeIf
 │   │   ├── DocumentBuilderInterface.php
-│   │   └── T1Builder.php         # Билдер для титула Т1
-│   ├── Entities/                  # Сущности данных
-│   │   ├── Address.php           # Адрес
-│   │   ├── BaseEntity.php        # Базовый класс сущности
-│   │   ├── Contact.php           # Контактная информация
-│   │   ├── Document.php          # Базовый класс документа
-│   │   ├── IP.php                # Индивидуальный предприниматель
-│   │   ├── SodInfGO.php          # Содержание информации грузоотправителя
-│   │   ├── SvGO.php              # Сведения о грузоотправителе
-│   │   ├── T1.php                # Документ титула Т1
-│   │   └── UL.php                # Юридическое лицо
-│   └── Exception/                 # Исключения
+│   │   ├── T1Builder.php … T4Builder.php   # ЭТрН
+│   │   ├── OrderT1Builder.php              # ЭЗЗ T1 (КНД 1110361)
+│   │   └── OrderT2Builder.php              # ЭЗЗ T2 (КНД 1110362)
+│   ├── Entities/                     # BaseEntity + все сущности
+│   │   ├── Address.php, Contact.php, LegalEntity.php, IP.php, Individual.php,
+│   │   ├── ForeignEntity.php, Signatory.php, Driver.php, Vehicle.php,
+│   │   ├── DocumentRequisites.php, Cargo.php, Route.php, Conditions.php, Shipment.php,
+│   │   ├── Shipper.php, Consignee.php, Carrier.php, Customer.php,
+│   │   ├── T1.php … T4.php                     # ЭТрН
+│   │   ├── OrderT1.php, OrderT2.php,           # ЭЗЗ документы
+│   │   ├── Participant.php, SupplyPoint.php, RoutePoint.php,
+│   │   ├── OrderCargo.php, DangerousCargoInfo.php,
+│   │   ├── VehicleRequirements.php, TemperatureRegime.php, HumidityRegime.php,
+│   │   ├── OrderSignatory.php, ElectronicPoa.php, PaperPoa.php,
+│   │   ├── InfoField.php, Person.php, Payment.php
+│   ├── Enums/
+│   │   └── Order.php                 # Справочники ЭЗЗ (Функция/Опер/МетОпрМасс/СодОпер/ТипВлад/
+│   │                                 #                СпосПодтПолном/НалСт)
+│   └── Exception/
 │       ├── UnsupportedDocumentException.php
 │       └── XMLGenerationException.php
 ├── examples/
-│   └── t1.php                    # Пример создания титула Т1
+│   ├── t1.php, t1.xml                # ЭТрН T1 + эталонный XML
+│   ├── t1_with_order.php, t1_with_order.xml   # T1 ЭТрН со ссылкой на ЭЗЗ (блок ИдЗак)
+│   ├── order_t1.php, order_t1.xml    # ЭЗЗ T1 (Заявка)
+│   ├── order_t2.php, order_t2.xml    # ЭЗЗ T2 (Принят)
+│   ├── order_t2_reject.php, order_t2_reject.xml    # ЭЗЗ T2 (Отказ)
+│   ├── t1.xsd … t8.xsd               # Схемы ФНС ЭТрН (T5–T8 — на будущее)
+│   ├── order_t1.xsd, order_t2.xsd    # Схемы ФНС ЭЗЗ
+│   └── t{1..4}.xml                   # Образцы ФНС для T2–T4 (внешние)
+├── CHANGELOG.md
 ├── composer.json
 └── README.md
 ```
@@ -130,42 +140,52 @@ russian-etrn-builder/
 
 ### DocumentGenerator
 
-Основной класс для генерации XML документов.
+- `generate(object $document): string` — генерирует XML строку по сущности.
+- `generateToFile(object $document, string $filename): bool`
+- `saveToFile(string $xml, string $filename, bool $withBom = true): bool` — сохраняет с UTF-8 BOM.
+- `setCharset(string $charset): void` — по умолчанию `utf-8`; для DropCat/1С обычно `windows-1251`.
+- `validate(string $xml, string $xsdPath): array` — валидация по XSD.
+  Возвращает пустой массив если валидно, иначе — список строк `line:column: message`.
 
-**Методы:**
-- `generate(object $document)` - Генерирует XML строку
-- `saveToFile(string $xml, string $filename)` - Сохраняет XML в файл с BOM
-- `generateToFile(object $document, string $filename)` - Генерирует и сохраняет файл
+### Билдеры
 
-### Сущности данных
+Все реализуют `DocumentBuilderInterface::build(DOMDocument, DOMElement $file, object $doc)`.
+Общий базовый класс `DocumentBuilder` содержит утилиты, разделяемые ЭТрН и ЭЗЗ.
 
-Все сущности наследуются от `BaseEntity` и имеют методы:
-- `get(string $name)` - Получить значение свойства
-- `set(string $name, mixed $value)` - Установить значение свойства
+### Сущности
 
-**Основные сущности:**
-- `T1` - Документ титула Т1
-- `UL` - Юридическое лицо
-- `IP` - Индивидуальный предприниматель
-- `Address` - Адрес
-- `Contact` - Контактная информация
-- `SvGO` - Сведения о грузоотправителе
-- `SodInfGO` - Содержание информации грузоотправителя
+Наследники `BaseEntity` — публичные типизированные свойства с защитой от опечаток
+(`__set` бросает исключение при неизвестном имени). Для ЭТрН документов —
+`T1..T4`, для ЭЗЗ — `OrderT1`, `OrderT2` (в корне `Entities\` — регистрация билдеров идёт по
+короткому имени класса).
+
+### Обратная совместимость (v1.7)
+
+- `Contact` теперь поддерживает массивы `phones[]`/`emails[]` (для ЭЗЗ, где `Тлф` — обязательное
+  множественное значение). Одиночные `phone`/`email` сохранены — используются билдерами ЭТрН.
+- `Driver` получил поля `inn: ?string`, `phones: string[]` (используются билдером ЭЗЗ T2; в
+  ЭТрН T1 читаются, но не обязательны).
+- `T1` (ЭТрН) получил поля `orderFileId/orderFileDate/orderFileTime/orderFileSignature`. Если
+  задан `orderFileId`, `T1Builder` выводит блок `<ИдЗак>` первым потомком `<СодИнфГО>`; иначе
+  вывод не меняется.
+
+Публичный API T1..T4Builder и `DocumentGenerator` не изменён.
 
 ## Обработка ошибок
 
-Библиотека использует два типа исключений:
-
-- `UnsupportedDocumentException` - Выбрасывается при попытке создать документ неподдерживаемого типа
-- `XMLGenerationException` - Выбрасывается при ошибках генерации XML
-
 ```php
+use MaxiStyle\EtrnBuilder\Exception\UnsupportedDocumentException;
+use MaxiStyle\EtrnBuilder\Exception\XMLGenerationException;
+
 try {
-    $xml = $generator->generate($document);
-} catch (MaxiStyle\EtrnBuilder\Exception\UnsupportedDocumentException $e) {
-    echo "Неподдерживаемый тип документа: " . $e->getMessage();
-} catch (MaxiStyle\EtrnBuilder\Exception\XMLGenerationException $e) {
-    echo "Ошибка генерации XML: " . $e->getMessage();
+    $xml = $generator->generate($doc);
+} catch (UnsupportedDocumentException $e) {
+    // документ не имеет зарегистрированного билдера
+} catch (XMLGenerationException $e) {
+    // ошибка при построении DOM
+} catch (\InvalidArgumentException $e) {
+    // билдер ЭЗЗ бросает при нарушении бизнес-правил формата
+    // (нет пункта Погрузки/Выгрузки, нет причины при отказе, contract при Заявка и т.п.)
 }
 ```
 

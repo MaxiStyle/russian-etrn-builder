@@ -1,8 +1,9 @@
 {
 	"name": "maxistyle/russian-etrn-builder",
-	"description": "PHP библиотека для создания ЭТрН документов",
+	"description": "PHP библиотека для генерации XML документов ЭТрН и ЭЗЗ в формате ФНС (v5.01)",
+	"version": "1.7.0",
 	"type": "library",
-	"keywords": ["etrn", "xml"],
+	"keywords": ["etrn", "ezz", "fns", "xml"],
 	"license": "MIT",
 	"authors": [
 		{
@@ -12,8 +13,9 @@
 	],
 	"require": {
 		"php": ">=8.1",
-		"ext-dom": "*"
-	},
+		"ext-dom": "*",
+      "ext-libxml": "*"
+    },
 	"minimum-stability": "stable",
 	"prefer-stable": true,
     "autoload": {

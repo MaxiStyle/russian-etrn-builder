@@ -128,4 +128,26 @@ class T1 extends Document
      * @var ?DateTimeInterface Дата заказа (заявки)
      */
     public ?DateTimeInterface $orderDate = null;
+
+    /**
+     * @var ?string ИдФайлЗак — имя файла обмена подписанного электронного заказа/заявки (без расширения).
+     * Если задан — билдер добавляет <ИдЗак> первым потомком <СодИнфГО>; иначе блок не выводится.
+     * См. §8 ТЗ_заказ-заявка.md, t1.xsd:131-168.
+     */
+    public ?string $orderFileId = null;
+
+    /**
+     * @var ?string ДатФайлЗак (d.m.Y).
+     */
+    public ?string $orderFileDate = null;
+
+    /**
+     * @var ?string ВрФайлЗак (H:i:s).
+     */
+    public ?string $orderFileTime = null;
+
+    /**
+     * @var ?string ЭП — электронная подпись файла заказа (base64).
+     */
+    public ?string $orderFileSignature = null;
 }

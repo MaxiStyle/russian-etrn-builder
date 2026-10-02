@@ -42,4 +42,15 @@ class Driver extends BaseEntity
      * @var string Отчество
      */
     public string $middleName;
+
+    /**
+     * @var ?string ИНН физлица (@ИННФЛ). Требуется для ЭЗЗ СвВодит; в ЭТрН — опционально.
+     */
+    public ?string $inn = null;
+
+    /**
+     * @var string[] Телефоны водителя (@Тлф ОМ в ЭЗЗ). Если заполнено, билдер ЭЗЗ выводит несколько
+     * значений; ЭТрН T1 использует одиночный {@see $phone}.
+     */
+    public array $phones = [];
 }

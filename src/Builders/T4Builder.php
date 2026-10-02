@@ -41,12 +41,11 @@ class T4Builder extends DocumentBuilder implements DocumentBuilderInterface
         $document->setAttribute('ВрИнфПрвВыд', $doc->dateFile->format('H:i:s'));
 
         // Ссылка на файл обмена T3 (грузополучателя)
-        $idInfGp = $dom->createElement('ИдИнфГП');
-        $idInfGp->setAttribute('ИдФайлИнфГП', $doc->t3FileId);
-        $idInfGp->setAttribute('ДатФайлИнфГП', $doc->t3FileDate);
-        $idInfGp->setAttribute('ВрФайлИнфГП', $doc->t3FileTime);
-        $idInfGp->setAttribute('ЭП', $doc->t3Signature);
-        $document->appendChild($idInfGp);
+        $this->appendReference(
+            $dom, $document, 'ИдИнфГП',
+            'ИдФайлИнфГП', 'ДатФайлИнфГП', 'ВрФайлИнфГП',
+            $doc->t3FileId, $doc->t3FileDate, $doc->t3FileTime, $doc->t3Signature,
+        );
 
         // Содержание — только UUID и текст операции (минимальный набор по XSD)
         $sodPrvVyd = $dom->createElement('СодПрвВыд');
@@ -56,20 +55,7 @@ class T4Builder extends DocumentBuilder implements DocumentBuilderInterface
 
         // Подписант
         if ($doc->signatory !== null) {
-            $signatory = $doc->signatory;
-            $podpis = $dom->createElement('Подписант');
-            $podpis->setAttribute('СтатПодп', $signatory->status);
-            if ($signatory->position !== '') {
-                $podpis->setAttribute('Должн', $signatory->position);
-            }
-            $fio = $dom->createElement('ФИО');
-            $fio->setAttribute('Фамилия', $signatory->lastName);
-            $fio->setAttribute('Имя', $signatory->firstName);
-            if ($signatory->middleName !== '') {
-                $fio->setAttribute('Отчество', $signatory->middleName);
-            }
-            $podpis->appendChild($fio);
-            $document->appendChild($podpis);
+            $this->appendSignatory($dom, $document, $doc->signatory);
         }
 
         $parent->appendChild($document);

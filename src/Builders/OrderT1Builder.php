@@ -432,13 +432,15 @@ class OrderT1Builder extends DocumentBuilder implements DocumentBuilderInterface
 
     protected function appendDangerous(DOMDocument $dom, DOMElement $parent, DangerousCargoInfo $d): void
     {
-        // Минимальный набор для первой версии; полный ДОПОГ — расширение без ломки API.
+        // По XSD все семь атрибутов обязательны; имена именно такие (не Класс/ГрУпак/КодОгрТун).
         $el = $dom->createElement('ИнфОпасн');
-        $this->setAttributeIf($el, 'НомООН', $d->unNumber);
-        $this->setAttributeIf($el, 'НаимОтгр', $d->properShippingName);
-        $this->setAttributeIf($el, 'Класс', $d->class);
-        $this->setAttributeIf($el, 'ГрУпак', $d->packingGroup);
-        $this->setAttributeIf($el, 'КодОгрТун', $d->tunnelRestrictionCode);
+        $el->setAttribute('НомООН', (string)$d->unNumber);
+        $el->setAttribute('НадОтгНаим', (string)$d->properShippingName);
+        $el->setAttribute('Клас', (string)$d->class);
+        $el->setAttribute('КласКод', (string)$d->classificationCode);
+        $el->setAttribute('ГрУп', (string)$d->packingGroup);
+        $el->setAttribute('ЗнОп', (string)$d->dangerSign);
+        $el->setAttribute('КодОгрЧерТун', (string)$d->tunnelRestrictionCode);
         $parent->appendChild($el);
     }
 

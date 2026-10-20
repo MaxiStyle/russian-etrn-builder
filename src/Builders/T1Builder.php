@@ -146,6 +146,18 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             }
             $mark = $dom->createElement('Марк', $cargo->marking);
             $gruz->appendChild($mark);
+
+            // Габариты груза (ГабарТип) — опциональный блок; XSD требует все 3 атрибута,
+            // если блок присутствует. Поэтому выводим только когда задано хотя бы одно значение;
+            // недостающие заполняем нулями, чтобы не нарушить XSD.
+            if ($cargo->height > 0 || $cargo->length > 0 || $cargo->width > 0) {
+                $gabar = $dom->createElement('Габар');
+                $gabar->setAttribute('ВысЗнач', (string)$cargo->height);
+                $gabar->setAttribute('ДлЗнач', (string)$cargo->length);
+                $gabar->setAttribute('ШирЗнач', (string)$cargo->width);
+                $gruz->appendChild($gabar);
+            }
+
             $weightElement = $dom->createElement('ПлМасГруз');
             if (isset($cargo->plannedWeight)) {
                 $weightElement->setAttribute('МасБрутЗнач', (string)$cargo->plannedWeight);

@@ -42,4 +42,19 @@ class Cargo extends BaseEntity
      * @var float Плановая масса груза, в килограммах
      */
     public float $plannedWeight;
+
+    /**
+     * @var float Высота груза, в метрах (атрибут Габар@ВысЗнач). 0 → блок Габар не выводится.
+     */
+    public float $height = 0.0;
+
+    /**
+     * @var float Длина груза, в метрах (атрибут Габар@ДлЗнач). 0 → блок Габар не выводится.
+     */
+    public float $length = 0.0;
+
+    /**
+     * @var float Ширина груза, в метрах (атрибут Габар@ШирЗнач). 0 → блок Габар не выводится.
+     */
+    public float $width = 0.0;
 }

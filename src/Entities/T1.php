@@ -85,9 +85,10 @@ class T1 extends Document
     public array $trailers = [];
 
     /**
-     * @var ?string Идентификатор иного получателя файла обмена (ИдПолИной) — FNS ID перевозчика
+     * @var string[] Идентификаторы иных получателей файла обмена (<ИдПолИной>, maxOccurs=unbounded) —
+     * FNS ID наблюдателей. Пустой массив → блок не выводится.
      */
-    public ?string $recipientId = null;
+    public array $recipientIds = [];
 
     /**
      * @var ?Route Сведения о передаче груза при приеме груза перевозчиком

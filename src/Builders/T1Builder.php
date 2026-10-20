@@ -336,10 +336,11 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $this->appendSignatory($dom, $document, $doc->signatory);
         }
 
-        // ИдПолИной — идентификатор иного получателя (FNS ID перевозчика), добавляется перед Документ
-        if (!empty($doc->recipientId)) {
-            $idPolInoi = $dom->createElement('ИдПолИной', $doc->recipientId);
-            $parent->appendChild($idPolInoi);
+        // ИдПолИной — идентификаторы иных получателей (FNS ID наблюдателей); maxOccurs=unbounded.
+        // Выводятся ПЕРЕД <Документ>.
+        foreach ($doc->recipientIds as $recipientId) {
+            if ($recipientId === '' || $recipientId === null) continue;
+            $parent->appendChild($dom->createElement('ИдПолИной', (string)$recipientId));
         }
 
         $parent->appendChild($document);

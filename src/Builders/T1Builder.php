@@ -141,6 +141,9 @@ class T1Builder extends DocumentBuilder implements DocumentBuilderInterface
             $gruz->setAttribute('СостГруз', $cargo->condition);
             $gruz->setAttribute('СпУпак', $cargo->packagingMethod ?: '-');
             $gruz->setAttribute('ВидТар', $cargo->packagingType ?: '-');
+            if (($cargo->otherInfo ?? '') !== '') {
+                $gruz->setAttribute('ДрОГруз', $cargo->otherInfo);
+            }
             if (isset($cargo->cargoUnits)) {
                 $gruz->setAttribute('КолМестГр', (string)$cargo->cargoUnits);
             }

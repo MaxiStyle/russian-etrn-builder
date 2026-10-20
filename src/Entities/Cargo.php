@@ -57,4 +57,9 @@ class Cargo extends BaseEntity
      * @var float Ширина груза, в метрах (атрибут Габар@ШирЗнач). 0 → блок Габар не выводится.
      */
     public float $width = 0.0;
+
+    /**
+     * @var string Другая информация о грузе (атрибут ДрОГруз на ОпГруз). Пустая строка → не выводится.
+     */
+    public string $otherInfo = '';
 }
